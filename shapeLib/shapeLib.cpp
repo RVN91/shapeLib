@@ -16,6 +16,10 @@
 // the functions' names in the DLL/SO and it is necessary while using C++.
 #define DESCRIPTORS extern "C" __declspec(dllexport)
 
+/*
+Creates a resultfile with headers.
+*/
+
 DESCRIPTORS const char * createResultFile(bool debug)
 {
 	const char * inputFileNameChar;
@@ -116,8 +120,8 @@ DESCRIPTORS void getParticle(const char *inputFileNameChar,
 
 DESCRIPTORS void traceBoundary(int *particlePointers, 
 	int *nPixels,
-	int *nRows,
-	int *nCols,
+	int nRows,
+	int nCols,
 	int **boundaryPointsArrayX,
 	int **boundaryPointsArrayY,
 	int *size)
@@ -135,7 +139,7 @@ DESCRIPTORS void traceBoundary(int *particlePointers,
 	std::vector <Point2D> boundaryPoints;
 	TraceBoundaryPoints boundObj;
 	boundObj.GetContinousBoundaryPoints(particleVector, 
-		*nCols, *nRows, boundaryPoints);
+		nCols, nRows, boundaryPoints);
 	
 	// Write to array.
 	*size = boundaryPoints.size();

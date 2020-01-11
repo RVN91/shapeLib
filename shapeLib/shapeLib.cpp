@@ -12,6 +12,7 @@
 #include "loadParticle.h"
 #include "traceBoundaryPoints.h"
 #include "skeletonize.h"
+#include "findEndPointsJunctions.h"
 
 // The extern "C" construct prevents the compiler to add decorations on 
 // the functions' names in the DLL/SO and it is necessary while using C++.
@@ -89,7 +90,7 @@ DESCRIPTORS void getPixelsCount(const char *inputFileNameChar,
 	int *nPixels)
 {
 	getPixelCount(inputFileNameChar, bytePosition, nPixels);
-	std::cout << *nPixels << std::endl;
+	//std::cout << *nPixels << std::endl;
 }
 
 DESCRIPTORS void getParticle(const char *inputFileNameChar, 
@@ -501,10 +502,9 @@ DESCRIPTORS void getSkeleton(
 	std::vector< std::vector< unsigned int > >
 		skeleton(*nRows, std::vector< unsigned int >(*nCols, 0));
 	
-	// Convert to array.
+	// Insert x, y coordinates to 2D array.
 	std::vector< std::vector< unsigned int > >
 		particleMatrix(*nRows, std::vector< unsigned int >(*nCols, 0));
-	int size = *nRows * *nCols;
 	
 	for (int i = 0; i < *nPixels; i++)
 	{
@@ -516,12 +516,13 @@ DESCRIPTORS void getSkeleton(
 	skeletonize(particleMatrix, skeleton, *nRows, *nCols);
 
 	// Convert vector to array.
+	
+	// Count the number of pixels in the skeleton.
 	int k = 0;
 	for (int i = 0; i < skeleton.size(); i++)
 	{
-		for (int j = 0; i < skeleton[0].size(); j++)
+		for (int j = 0; j < skeleton[0].size(); j++)
 		{
-			std::cout << i << ", " << j << std::endl;
 			if (skeleton[i][j] == 1)
 			{
 				k++;
@@ -530,22 +531,71 @@ DESCRIPTORS void getSkeleton(
 	}
 	*skelSize = k;
 	
+	// Allocate memory for skeleton pixels.
 	*resultX = new int[*skelSize];
 	*resultY = new int[*skelSize];
 
+	// Store skeletonized pixels in result
+	// vectors.
 	k = 0;
 	for (int i = 0; i < skeleton.size(); i++)
 	{
-		for (int j = 0; i < skeleton[0].size(); j++)
+		for (int j = 0; j < skeleton[0].size(); j++)
 		{
 			if (skeleton[i][j] == 1)
 			{
-				(*resultX)[k] = i;
+				(*resultX)[k] = i - 1; // Srange offset problem!
 				(*resultY)[k] = j;
 				k++;
 			}
 		}
 	}
+}
+
+/*
+Find end points.
+*/
+DESCRIPTORS void getEndPoints(
+	int *x, 
+	int *y,
+	int *nPixels,
+	int *nRows, 
+	int *nCols,
+	int **resultX,
+	int **resultY,
+	int *nPoints)
+{
+	// End points.
+	std::vector< Point > endPoints;
+	
+	// Insert skeleton x, y coordinates to 2D array.
+	std::vector< std::vector< unsigned int > >
+		particleMatrix(*nRows, std::vector< unsigned int >(*nCols, 0));
+
+	for (int i = 0; i < *nPixels; i++)
+	{
+		//std::cout << i << std::endl;
+		//std::cout << x[i] << ", " << y[i] << std::endl;
+		particleMatrix[ x[i] ][ y[i] ] = 1;
+	}
+	
+	endPoints = findEndPoints(particleMatrix);
+
+	
+	// Allocate memory for skeleton pixels.
+	*resultX = new int[endPoints.size()];
+	*resultY = new int[endPoints.size()];
+	
+	// Store end point pixels in result
+	// vectors.  
+	for (int i = 0; i < endPoints.size(); i++)
+	{
+		(*resultX)[i] = (int)endPoints[i].x;
+		(*resultY)[i] = (int)endPoints[i].y;
+	}
+
+	// Store number of end points.
+	*nPoints = endPoints.size();
 }
 
 DESCRIPTORS void free_mem_float(float** a)

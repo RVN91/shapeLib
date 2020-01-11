@@ -36,6 +36,9 @@
     <ClInclude Include="skeletonize.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="findEndPointsJunctions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="skeletonize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="findEndPointsJunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

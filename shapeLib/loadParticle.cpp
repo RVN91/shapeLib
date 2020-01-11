@@ -206,8 +206,8 @@ void getParticlePixels(const char * fileName,
 	float pno = readU32(particleFile, bytePosition);
 	float mpno = readU32(particleFile, bytePosition);
 	
-	//*minorDim = minorDimension;
-	//*majorDim = majorDimension;
+	*minorDim = minorDimension;
+	*majorDim = majorDimension;
 
 	// Delphi strings are not fixed in size but a comes with a byte
 	// length defined in the first byte of the string.

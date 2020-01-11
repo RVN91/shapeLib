@@ -148,6 +148,7 @@
     <ClInclude Include="convexHull.h" />
     <ClInclude Include="findEndPointsJunctions.h" />
     <ClInclude Include="loadParticle.h" />
+    <ClInclude Include="shortestPath.h" />
     <ClInclude Include="skeletonize.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="findEndPointsJunctions.cpp" />
     <ClCompile Include="loadParticle.cpp" />
     <ClCompile Include="shapeLib.cpp" />
+    <ClCompile Include="shortestPath.cpp" />
     <ClCompile Include="skeletonize.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

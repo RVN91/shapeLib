@@ -13,6 +13,7 @@
 #include "traceBoundaryPoints.h"
 #include "skeletonize.h"
 #include "findEndPointsJunctions.h"
+#include "shortestPath.h"
 
 // The extern "C" construct prevents the compiler to add decorations on 
 // the functions' names in the DLL/SO and it is necessary while using C++.
@@ -553,7 +554,7 @@ DESCRIPTORS void getSkeleton(
 }
 
 /*
-Find end points.
+Find end points in skeleton.
 */
 DESCRIPTORS void getEndPoints(
 	int *x, 
@@ -574,15 +575,12 @@ DESCRIPTORS void getEndPoints(
 
 	for (int i = 0; i < *nPixels; i++)
 	{
-		//std::cout << i << std::endl;
-		//std::cout << x[i] << ", " << y[i] << std::endl;
 		particleMatrix[ x[i] ][ y[i] ] = 1;
 	}
 	
 	endPoints = findEndPoints(particleMatrix);
 
-	
-	// Allocate memory for skeleton pixels.
+	// Allocate memory for end points.
 	*resultX = new int[endPoints.size()];
 	*resultY = new int[endPoints.size()];
 	
@@ -597,6 +595,61 @@ DESCRIPTORS void getEndPoints(
 	// Store number of end points.
 	*nPoints = endPoints.size();
 }
+
+/*
+Find length of skeleton by finding the greatest
+distance between two end points.
+*/
+DESCRIPTORS void getMaxDistanceEndPoints(
+	int *xEndPoints, 
+	int *yEndPoints,
+	int *nPoints,
+	int *maxDistance,
+	int *xSkeleton,
+	int *ySkeleton,
+	int *nRows,
+	int *nCols,
+	int *nSkeletonPixels)
+{
+	// Recreate end points.
+	std::vector< Point > endPoints;
+	
+	for (int i = 0; i < *nPoints; i++)
+	{
+		endPoints.push_back(Point{ (double)xEndPoints[i], 
+			(double)yEndPoints[i] });
+	}
+		
+	// Insert skeleton x, y coordinates to 2D array.
+	std::vector< std::vector< unsigned int > >
+		skeleton(*nRows, std::vector< unsigned int >(*nCols, 0));
+	
+	for (int i = 0; i < *nSkeletonPixels; i++)
+	{
+		skeleton[ xSkeleton[i] ][ ySkeleton[i] ] = 1;
+	}
+	
+	// Find length of skeleton. This is only meaningful
+	// when considering the particle fiberlike.
+	//cout << "n endpoints: " << endPoints.size() << endl;
+	for (int i = 0; i < endPoints.size(); i++)
+	{
+		Point srcPoint = endPoints[i];
+		for (int j = 0; j < endPoints.size(); j++)
+		{
+			Point dstPoint = endPoints[j];
+			// Plus 1 to account for source pixel.
+			int dist = breadthFirstSearch(skeleton, srcPoint,
+				dstPoint) + 1;
+
+			if (*maxDistance < dist)
+			{
+				*maxDistance = dist;
+			}
+		}
+	}
+}
+
 
 DESCRIPTORS void free_mem_float(float** a)
 {

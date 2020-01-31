@@ -1,8 +1,13 @@
-// shapeLib.cpp : Defines the exported functions for the DLL application.
-//
+/*
+Library to load and calculate particle
+size and shape from sIMPLe binary files.
+
+Author: Rasmus Vest Nielsen
+*/
 
 #include "stdafx.h"
 
+// Standard libraries.
 #include <iostream>
 #include <fstream>
 #include <string>

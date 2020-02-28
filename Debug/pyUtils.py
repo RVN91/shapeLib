@@ -54,7 +54,7 @@ def load_particle():
 
     return n_particles
     
-def read_coords():
+def read_particle_coords():
     """
     Reads the pixel count of the current particle and then creates a numpy 
     array for shapeLib.dll to place the pixel coordinates.
@@ -132,7 +132,7 @@ def dynamic_array():
 
     return mem, size
 
-def offset_coords(x_pixels, y_pixels):
+def offset_particle_coords(x_pixels, y_pixels):
     """
     Offsets particle pixels from sIMPLe to zero axis reference. Makes plotting 
     of figures easier.

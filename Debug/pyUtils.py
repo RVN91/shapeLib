@@ -11,7 +11,7 @@ from ctypes import *
 import ctypes
 
 # Load library. Full path must be specified.
-dll_c = cdll.LoadLibrary(("C:/Users/Rasmus/Desktop/stuff/"
+dll_c = cdll.LoadLibrary(("C:/Users/rasmus/Desktop/microplastic/stuff/"
                          "shapeLib/Debug/shapeLib.dll"))
 
 # "Global" variables...

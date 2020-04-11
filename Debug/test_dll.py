@@ -31,6 +31,10 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
+# File names.
+INPUT_FILE_NAME = "T1_1.pmp"
+OUTPUT_FILE_NAME = "results.csv"
+
 # Extra options.
 PLOT_FIGS = False  # If true, plot particle shape in "/plots".
 PLOT_PARTICLE_N = 56 # Plots particle shape of particle N. 
@@ -46,12 +50,12 @@ def main():
     print_options()
 
     # Load particles
-    n_particles = pyUtils.load_particle()
+    n_particles = pyUtils.load_particle(INPUT_FILE_NAME)
     
     # Iterate through each particle and store particle size and shape in Data 
     # Frame.
     df_list = []
-    for n_particle in range(0, 277):#n_particles): 
+    for n_particle in range(0, n_particles): 
         log("Particle {0} of {1}...".format(n_particle, n_particles))
         
         df_tmp, particle_coords = get_particle_shape_size(n_particle)
@@ -81,7 +85,7 @@ def get_particle_shape_size(n_particle):
             Particle size and shape descriptors.
     """
     # Read x, y particle coordinates. 
-    x_coords, y_coords, minor_dim, major_dim = pyUtils.read_particle_coords()
+    x_coords, y_coords, minor_dim, major_dim = pyUtils.read_particle_coords(INPUT_FILE_NAME)
    
     # Zero reference the coordinates, add +1 padding.
     x_offset, y_offset, n_rows, n_cols = \

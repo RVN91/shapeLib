@@ -126,7 +126,8 @@ void countParticles(const char *fileName, int *nParticles,
 	particleFile.open(fileName, std::ios::binary);
 	if (!particleFile.is_open())
 	{
-		std::cout << "ERROR: Cannot open file!" << std::endl;
+		std::cout << "ERROR: Cannot open sIMPLe binary file:" << std::endl;
+		std::cout << fileName << std::endl;
 		exit(EXIT_FAILURE);
 	} else if (*bytePosition != 0)
 	{

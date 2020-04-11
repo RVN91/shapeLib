@@ -11,7 +11,9 @@ Author: Rasmus Vest Nielsen
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring> // For strcpy_s
 #include <stdio.h>
+#include <stdlib.h>
 
 // My libraries.
 #include "loadParticle.h"
@@ -27,35 +29,19 @@ Author: Rasmus Vest Nielsen
 /*
 Creates a resultfile with headers.
 */
-
-DESCRIPTORS const char * createResultFile(bool debug)
+DESCRIPTORS void createResultFile(bool debug,
+	char * outputFileName)
 {
-	const char * inputFileNameChar;
-	const char * csvFileNameChar;
-
 	if (debug == true)
 	{
-		inputFileNameChar = "T1_1.pmp";
-		csvFileNameChar = "results.csv";
+		outputFileName = "results.csv";
 	}
-	else
-	{
-		std::cout << "Enter file name: " << std::endl;
-		std::string inputFileName;
-		std::cin >> inputFileName;
-		inputFileNameChar = inputFileName.c_str();
-		std::cout << "Name of input file: " << inputFileName << std::endl;
-		std::cout << "Set name for output file name (add .csv to the end of the file name!): " << std::endl;
-		std::string csvFileName;
-		std::cin >> csvFileName;
-		csvFileNameChar = csvFileName.c_str();
-	}
-
+	
 	// Remove previous files.
-	remove(csvFileNameChar);
+	remove(outputFileName);
 
 	// Write headers to .csv file.
-	std::ofstream file(csvFileNameChar, std::ios::app);
+	std::ofstream file(outputFileName);
 	if (file.is_open())
 	{
 		file << "Particle_no" << ",";
@@ -78,13 +64,12 @@ DESCRIPTORS const char * createResultFile(bool debug)
 		file << "Fiber_elongation" << std::endl;
 		file.close();
 	}
-	return inputFileNameChar;
 }
 
 DESCRIPTORS int getParticleCount(const char *inputFileNameChar, long *bytePosition)
 {
 	int nParticles = 0;
-
+	std::cout << *inputFileNameChar << std::endl;
 	countParticles(inputFileNameChar, &nParticles, bytePosition);
 	std::cout << "Number of particles: " << nParticles << std::endl;
 	

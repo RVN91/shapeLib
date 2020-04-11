@@ -17,7 +17,7 @@ dll_c = cdll.LoadLibrary(("C:/Users/rasmus/Desktop/microplastic/stuff/"
 # "Global" variables...
 # If debug is enabled, file names are set to default. If disabled, user is 
 # asked for file names.
-DEBUG = True
+DEBUG = True 
 BYTE_POSITION = 0 # Keeps track of cursor in binary file.
 
 # Log...
@@ -29,24 +29,39 @@ def log(var):
             print(var)
 
 # Create result file. 
-dll_c.createResultFile.argtypes = [ctypes.c_bool]
-dll_c.createResultFile.restype = ctypes.c_char_p
-inputFileName = dll_c.createResultFile(DEBUG)
+dll_c.createResultFile.argtypes = [ctypes.c_bool, ctypes.c_char_p]
+# Need to encode the original to get bytes for string_buffer.
+outputFileName = "results.csv"
+outputFileName = ctypes.create_string_buffer(str.encode(outputFileName))
+#dll_c.createResultFile.restypes = ctypes.c_char_p
+dll_c.createResultFile(DEBUG, outputFileName)
 
-def load_particle():
+print(outputFileName.value)
+
+def encode_string_to_mutable(file_name):
+    """
+    Encodes string to make it changeable in DLL.
+    """
+    # Encode the original to get bytes for string_buffer.
+    file_name = ctypes.create_string_buffer(str.encode(file_name))
+    return file_name
+
+def load_particle(input_file_name):
     """
     Loads a particle from a sIMPLe binary file
     and streaming it to a numpy array.
     """
     global BYTE_POSITION
+    
+    # Encode the original to get bytes for string_buffer.
+    input_file_name = encode_string_to_mutable(input_file_name)
 
     # Get the number of particles.
     dll_c.getParticleCount.restype = ctypes.c_int
     byte_position = ctypes.c_long(BYTE_POSITION) 
-
     # The number of particles is stored at byte_position = 0.
     # Any other input will fail!
-    n_particles = dll_c.getParticleCount(inputFileName, 
+    n_particles = dll_c.getParticleCount(input_file_name, 
             ctypes.byref(byte_position))
 
     # Update byte position.
@@ -54,7 +69,7 @@ def load_particle():
 
     return n_particles
     
-def read_particle_coords():
+def read_particle_coords(input_file_name):
     """
     Reads the pixel count of the current particle and then creates a numpy 
     array for shapeLib.dll to place the pixel coordinates.
@@ -66,10 +81,13 @@ def read_particle_coords():
     """
     global BYTE_POSITION
     
+    # Encode the original to get bytes for string_buffer.
+    input_file_name = encode_string_to_mutable(input_file_name)
+    
     byte_position = ctypes.c_long(BYTE_POSITION) 
     
     n_pixels = ctypes.c_int(0)
-    dll_c.getPixelsCount(inputFileName, 
+    dll_c.getPixelsCount(input_file_name, 
             ctypes.byref(byte_position), 
             ctypes.byref(n_pixels))
     
@@ -97,7 +115,7 @@ def read_particle_coords():
 
     # Get x and y pixel coordinates into numpy arrays.
     n_pixels = ctypes.c_int(n_pixels)
-    dll_c.getParticle(inputFileName, 
+    dll_c.getParticle(input_file_name, 
             ctypes.byref(byte_position), 
             ctypes.byref(n_pixels),
             obj_x_pixels,

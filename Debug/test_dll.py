@@ -5,7 +5,7 @@ shapeLib.dll is written in C-idiomatic style C++ code, making it "easily"
 integrated with Python using Ctypes.
 
 All functions return Python- or numpy-like variables and arrays (handled by 
-hapeLibPyUtils.py).
+pyUtils.py).
 
 NOTES:
 
@@ -70,7 +70,7 @@ def main():
     # Concatenate Data Frames.
     df = pd.concat(df_list)
     df.index.name = "particle_no"
-    df.to_csv("shape_sizes.csv")
+    df.to_csv(OUTPUT_FILE_NAME)
     print(df)
 
 def get_particle_shape_size(n_particle):
@@ -206,7 +206,7 @@ def get_particle_shape_size(n_particle):
                 fiber_elongation = fiber_average_diameter / fiber_length;
 
             except:
-                log("Ups. Something went wrong...")
+                log("Ups. Something went wrong calculating the fiber parameters...")
                 log(max_feret)
                 log(fiber_length)
                 curl = 0

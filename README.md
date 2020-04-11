@@ -1,5 +1,5 @@
 # shapeLib
-Library for analysing particle size and shape from sIMPe.
+Library for analysing particle size and shape from sIMPLe.
 
 Calculates the following shape discriptors:
 * Convexity, Area, Perimeter length, Maximum
@@ -14,7 +14,7 @@ shapeLib.dll is written in C-idiomatic style C++ code, making it "easily"
 integrated with Python using Ctypes.
 
 All functions return Python- or numpy-like variables and arrays (handled by 
-hapeLibPyUtils.py).
+pyUtils.py).
 
 NOTES:
 

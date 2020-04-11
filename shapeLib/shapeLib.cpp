@@ -205,7 +205,7 @@ DESCRIPTORS void findPerimeter(int *x, int *y,
 			(double)y[k] });
 		//std::cout << "x, y: " << xPixels[k] << ", " << yPixels[k] << std::endl;
 	}
-	
+  	
 	*perimeter = 0.0;
 	// Find the distance between adjacent points 
 	for (int i = 0; i < pointsVec.size() - 1; i++) {

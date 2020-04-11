@@ -84,9 +84,10 @@ def get_particle_shape_size(n_particle):
         df : Pandas Data Frame 
             Particle size and shape descriptors.
     """
+
     # Read x, y particle coordinates. 
     x_coords, y_coords, minor_dim, major_dim = pyUtils.read_particle_coords(INPUT_FILE_NAME)
-   
+    
     # Zero reference the coordinates, add +1 padding.
     x_offset, y_offset, n_rows, n_cols = \
         pyUtils.offset_particle_coords(x_coords, y_coords) 
@@ -99,92 +100,118 @@ def get_particle_shape_size(n_particle):
     particle_size_threshold = 5 # [pixels] 
     
     if x_coords.shape[0] > particle_size_threshold:
-        
         # Trace boundary contour.
         boundary_x, boundary_y, size = pyUtils.boundary_points(x_offset, 
                 y_offset, n_rows, n_cols)
         
-        # Calculate convex hull.
-        convex_x, convex_y = pyUtils.convex_hull(x_offset, 
-                y_offset)
-        
-        # Calculate the particle perimenter.
-        perimeter = pyUtils.calc_perimeter(boundary_x, 
-                boundary_y)
-
-        convex_perimeter = pyUtils.calc_perimeter(convex_x, 
-                convex_y);
-       
-        # Calculate the area.
-        area        = pyUtils.calc_area(boundary_x, boundary_y)
-        convex_area = pyUtils.calc_area(convex_x, convex_y)
-        
-        # Calculate solidity.
-        solidity = area /convex_area 
-        
-        # Calculate convexity.
-        convexity = convex_perimeter / perimeter
-        
-        # Calculate equivalent circular diameter.
-        pi = 3.14159265358979323846
-        equivalent_diameter = np.sqrt(4 * area / pi)
-
-        # Calculate circularity and compactness.
-        circularity = (4 * pi * area) / convex_perimeter**2
-        
-        compactness = (4 * pi * area) / perimeter**2
-        
-        # Calculate minumim and maximum Feret diameters.
-        min_feret, max_feret = pyUtils.calc_feret_diameter(convex_x, 
-                convex_y)
-        
-        # Aspect ratio.
-        aspect_ratio = major_dim / minor_dim
-
-        # Feret aspect ratio.
-        feret_ratio = min_feret / max_feret
-        
-        # Fiber-related parameters.
-        # Get skeleton.
-        skeleton_x, skeleton_y, n_points_skeleton = pyUtils.skeletonize(
-                x_offset, y_offset, 
-                n_rows, n_cols)
-
-        # Find end points. 
-        end_points_x, end_points_y, n_end_points = pyUtils.get_end_points(
-                skeleton_x, skeleton_y, 
-                n_rows, n_cols)
-       
-        # Find the fiber length.
-        fiber_length = pyUtils.get_fiber_length(end_points_x, end_points_y,
-                skeleton_x, skeleton_y, n_rows, n_cols)
-
-        try:
-            # Calculate curl or straigthness (Max. Feret diameter 
-            # fiber length).
-            # 0 <= x <= 1; where 1 is a straight shape.
-            # A measure of the curl up a fiberlike shape. 
-            curl = max_feret / fiber_length;
-
-            # Calculate average diameter (fiberlike shapes).
-            # area / Lenght = width (assuming the fiber is
-            # straightened out to a rectangle).
-            fiber_average_diameter = area / fiber_length;
-
-            # Calculate fiber elongation (average diameter /
-            # fiber length).
-            # 0 <= x <= 1; where => 0 the particle is more elongated.
-            # A potential measure of the fiberlike characteristics.
-            fiber_elongation = fiber_average_diameter / fiber_length;
-
-        except:
-            log("Ups. Something went wrong...")
-            log(max_feret)
-            log(fiber_length)
+        # If there are "dead pixels" inside of the particle (indicating it is hollow?)
+        # then skip that particle.
+        if boundary_x.size == 0:
+            print("Boundary algorithm failed!")
+            print("Does particle {0} have holes inside of it?".format(n_particle))
+            print("The boundary algorithm can't handle hollow particles.")
+            print("Moving on to the next particle.")
+            perimeter =0 
+            convex_perimeter = 0 
+            area = 0 
+            convex_area = 0 
+            solidity = 0 
+            convexity = 0 
+            equivalent_diameter = 0 
+            circularity = 0
+            compactness = 0
+            min_feret = 0
+            max_feret = 0
+            minor_dim = 0
+            major_dim = 0
+            aspect_ratio = 0
+            feret_ratio = 0
+            fiber_length = 0
             curl = 0
-            fiber_average_diameter = 0
+            fiber_average_diameter  = 0
             fiber_elongation = 0
 
+        else:
+            # Calculate convex hull.
+            convex_x, convex_y = pyUtils.convex_hull(x_offset, 
+                    y_offset)
+            
+            # Calculate the particle perimenter.
+            perimeter = pyUtils.calc_perimeter(boundary_x, 
+                    boundary_y)
+
+            convex_perimeter = pyUtils.calc_perimeter(convex_x, 
+                    convex_y);
+           
+            # Calculate the area.
+            area        = pyUtils.calc_area(boundary_x, boundary_y)
+            convex_area = pyUtils.calc_area(convex_x, convex_y)
+            
+            # Calculate solidity.
+            solidity = area /convex_area 
+            
+            # Calculate convexity.
+            convexity = convex_perimeter / perimeter
+            
+            # Calculate equivalent circular diameter.
+            pi = 3.14159265358979323846
+            equivalent_diameter = np.sqrt(4 * area / pi)
+            
+            # Calculate circularity and compactness.
+            circularity = (4 * pi * area) / convex_perimeter**2
+            
+            compactness = (4 * pi * area) / perimeter**2
+            
+            # Calculate minumim and maximum Feret diameters.
+            min_feret, max_feret = pyUtils.calc_feret_diameter(convex_x, 
+                    convex_y)
+            
+            # Aspect ratio.
+            aspect_ratio = major_dim / minor_dim
+
+            # Feret aspect ratio.
+            feret_ratio = min_feret / max_feret
+            
+            # Fiber-related parameters.
+            # Get skeleton.
+            skeleton_x, skeleton_y, n_points_skeleton = pyUtils.skeletonize(
+                    x_offset, y_offset, 
+                    n_rows, n_cols)
+
+            # Find end points. 
+            end_points_x, end_points_y, n_end_points = pyUtils.get_end_points(
+                    skeleton_x, skeleton_y, 
+                    n_rows, n_cols)
+           
+            # Find the fiber length.
+            fiber_length = pyUtils.get_fiber_length(end_points_x, end_points_y,
+                    skeleton_x, skeleton_y, n_rows, n_cols)
+
+            try:
+                # Calculate curl or straigthness (Max. Feret diameter 
+                # fiber length).
+                # 0 <= x <= 1; where 1 is a straight shape.
+                # A measure of the curl up a fiberlike shape. 
+                curl = max_feret / fiber_length;
+
+                # Calculate average diameter (fiberlike shapes).
+                # area / Lenght = width (assuming the fiber is
+                # straightened out to a rectangle).
+                fiber_average_diameter = area / fiber_length;
+
+                # Calculate fiber elongation (average diameter /
+                # fiber length).
+                # 0 <= x <= 1; where => 0 the particle is more elongated.
+                # A potential measure of the fiberlike characteristics.
+                fiber_elongation = fiber_average_diameter / fiber_length;
+
+            except:
+                log("Ups. Something went wrong...")
+                log(max_feret)
+                log(fiber_length)
+                curl = 0
+                fiber_average_diameter = 0
+                fiber_elongation = 0
 
         # Store data in CSV file.
         d = {
@@ -236,19 +263,35 @@ def get_particle_shape_size(n_particle):
                                "boundary_y": boundary_y
                     }
         else:
-            particle_coords = {"convex_x": convex_x,
-                               "convex_y": convex_y,
-                               "x_offset": x_offset,
-                               "y_offset": y_offset,
-                               "skeleton_x": skeleton_x,
-                               "skeleton_y": skeleton_y,
-                               "end_points_x": end_points_x,
-                               "end_points_y": end_points_y,
-                               "n_rows": n_rows,
-                               "n_cols": n_cols,
-                               "boundary_x": boundary_x,
-                               "boundary_y": boundary_y
-                    }
+            try:
+                particle_coords = {"convex_x": convex_x,
+                                   "convex_y": convex_y,
+                                   "x_offset": x_offset,
+                                   "y_offset": y_offset,
+                                   "skeleton_x": skeleton_x,
+                                   "skeleton_y": skeleton_y,
+                                   "end_points_x": end_points_x,
+                                   "end_points_y": end_points_y,
+                                   "n_rows": n_rows,
+                                   "n_cols": n_cols,
+                                   "boundary_x": boundary_x,
+                                   "boundary_y": boundary_y
+                        }
+            except:
+                particle_coords = {"convex_x": 0,
+                                   "convex_y": 0,
+                                   "x_offset": 0,
+                                   "y_offset": 0,
+                                   "skeleton_x": 0,
+                                   "skeleton_y": 0,
+                                   "end_points_x": 0,
+                                   "end_points_y": 0,
+                                   "n_rows": 0,
+                                   "n_cols": 0,
+                                   "boundary_x": 0,
+                                   "boundary_y": 0
+                        }
+
     else: # Not enough pixels.
         d = {
             "perimeter": 0, 

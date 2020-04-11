@@ -17,7 +17,7 @@ dll_c = cdll.LoadLibrary(("C:/Users/rasmus/Desktop/microplastic/stuff/"
 # "Global" variables...
 # If debug is enabled, file names are set to default. If disabled, user is 
 # asked for file names.
-DEBUG = True 
+DEBUG = False 
 BYTE_POSITION = 0 # Keeps track of cursor in binary file.
 
 # Log...

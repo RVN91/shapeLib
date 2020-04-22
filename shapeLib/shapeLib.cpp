@@ -81,7 +81,7 @@ DESCRIPTORS void getPixelsCount(const char *inputFileNameChar,
 	int *nPixels)
 {
 	getPixelCount(inputFileNameChar, bytePosition, nPixels);
-	std::cout << "N pixels: " << *nPixels << std::endl;
+	//std::cout << "N pixels: " << *nPixels << std::endl;
 }
 
 DESCRIPTORS void getParticle(const char *inputFileNameChar, 

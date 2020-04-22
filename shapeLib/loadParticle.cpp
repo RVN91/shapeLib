@@ -197,7 +197,7 @@ void getParticlePixels(const char * fileName,
 		//yPixels[j] = read32(particleFile, bytePosition);
 		yPixels.push_back(read32(particleFile, bytePosition));
 	}
-
+	
 	unsigned int xMean = readU32(particleFile, bytePosition);
 	unsigned int yMean = readU32(particleFile, bytePosition);
 	float majorDimension = read32float(particleFile, bytePosition);

@@ -13,7 +13,7 @@ import ctypes
 
 # Load library. Full path must be specified.
 current_directory = os.getcwd()
-dll = cdll.LoadLibrary(current_directory +"/shapeLibC.dll")
+dll_c = cdll.LoadLibrary(current_directory +"/shapeLib.dll")
 
 # "Global" variables...
 # If debug is enabled, file names are set to default. If disabled, user is 

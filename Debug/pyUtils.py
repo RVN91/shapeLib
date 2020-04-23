@@ -4,6 +4,7 @@ Utility functions for shapeLib.py
 Author: Rasmus Vest Nielsen
 """
 
+import os
 import numpy as np
 from numpy.ctypeslib import ndpointer
 import matplotlib.pyplot as plt
@@ -11,8 +12,8 @@ from ctypes import *
 import ctypes
 
 # Load library. Full path must be specified.
-dll_c = cdll.LoadLibrary(("C:/Users/rasmus/Desktop/microplastic/stuff/"
-                         "shapeLib/Debug/shapeLib.dll"))
+current_directory = os.getcwd()
+dll = cdll.LoadLibrary(current_directory +"/shapeLibC.dll")
 
 # "Global" variables...
 # If debug is enabled, file names are set to default. If disabled, user is 
